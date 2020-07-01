@@ -1,65 +1,20 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
+import { BrowserRouter, Switch, Route } from "react-router-dom";
 import { Navbar } from "./components/Navbar";
-import { TodoForm } from "./components/TodoForm";
-import { TodoList } from "./components/TodoList";
-import { ITodo } from "./interfaces";
-
-declare var confirm: (qestion: string) => boolean;
+import { TodosPage } from "./pages/TodosPage";
+import { AboutPage } from "./pages/AboutPage";
 
 const App: React.FC = () => {
-  const [todos, setTodos] = useState<ITodo[]>([]);
-
-  useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem("todos") || "[]") as ITodo[];
-    setTodos(saved);
-  }, []);
-
-  useEffect(()=> {
-    localStorage.setItem('todos', JSON.stringify(todos))
-  }, [todos])
-
-  const addHandler = (title: string) => {
-    // console.log('Add new todo', title)
-    const newTodo: ITodo = {
-      title: title,
-      id: Date.now(),
-      completed: false,
-    };
-    // setTodos([newTodo, ...todos])
-    // setTodos([newTodo, ...todos])
-    setTodos((prevState) => [newTodo, ...prevState]);
-  };
-
-  const toggleHandler = (id: number) => {
-    setTodos((prevState) =>
-      prevState.map((todo) => {
-        if (todo.id === id) {
-          todo.completed = !todo.completed;
-        }
-        return todo;
-      })
-    );
-  };
-
-  const removeHandler = (id: number) => {
-    const shoudRemove = window.confirm("Do you really want it?");
-    if (shoudRemove) {
-      setTodos((prevState) => prevState.filter((todo) => todo.id !== id));
-    }
-  };
-
   return (
-    <React.Fragment>
+    <BrowserRouter>
       <Navbar />
       <div className="container">
-        <TodoForm onAdd={addHandler} />
-        <TodoList
-          todos={todos}
-          onToggle={toggleHandler}
-          onRemove={removeHandler}
-        />
+        <Switch>
+          <Route component={TodosPage} path={"/"} exact />
+          <Route component={AboutPage} path={"/about"} exact />
+        </Switch>
       </div>
-    </React.Fragment>
+    </BrowserRouter>
   );
 };
 
